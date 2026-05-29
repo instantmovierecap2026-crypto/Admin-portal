@@ -1,0 +1,107 @@
+{
+  "entities": {
+    "Teacher": {
+      "title": "Teacher",
+      "description": "Information about a school teacher",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "teacherId": { "type": "string" },
+        "sex": { "type": "string", "enum": ["Male", "Female"] },
+        "age": { "type": "number" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["name", "teacherId", "sex", "age"]
+    },
+    "Grade": {
+      "title": "Grade",
+      "description": "A grade and section (e.g., 9A)",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["name"]
+    },
+    "Student": {
+      "title": "Student",
+      "description": "A student in a specific grade",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "studentId": { "type": "string" },
+        "sex": { "type": "string", "enum": ["Male", "Female"] },
+        "age": { "type": "number" },
+        "gradeId": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["name", "studentId", "sex", "age", "gradeId"]
+    },
+    "Subject": {
+      "title": "Subject",
+      "description": "A subject taught in a grade",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "passkey": { "type": "string" },
+        "gradeId": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["name", "passkey", "gradeId"]
+    },
+    "Result": {
+      "title": "Result",
+      "description": "Student result for a specific subject",
+      "type": "object",
+      "properties": {
+        "studentId": { "type": "string" },
+        "subjectId": { "type": "string" },
+        "gradeId": { "type": "string" },
+        "semester1": { "type": "number" },
+        "semester2": { "type": "number" },
+        "average": { "type": "number" },
+        "total": { "type": "number" },
+        "rank": { "type": "number" },
+        "status": { "type": "string", "enum": ["Pass", "Fail", "Unfilled"] },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["studentId", "subjectId", "gradeId"]
+    },
+    "Admin": {
+      "title": "Admin",
+      "description": "System administrator",
+      "type": "object",
+      "properties": {
+        "email": { "type": "string" },
+        "role": { "type": "string", "enum": ["admin"] }
+      },
+      "required": ["email", "role"]
+    }
+  },
+  "firestore": {
+    "teachers": {
+      "schema": "Teacher",
+      "description": "School teachers list"
+    },
+    "grades": {
+      "schema": "Grade",
+      "description": "Grades and sections"
+    },
+    "students": {
+      "schema": "Student",
+      "description": "Students in the school"
+    },
+    "subjects": {
+      "schema": "Subject",
+      "description": "Subjects offered per grade"
+    },
+    "results": {
+      "schema": "Result",
+      "description": "Student academic results"
+    },
+    "admins": {
+      "schema": "Admin",
+      "description": "Authorized administrators"
+    }
+  }
+}

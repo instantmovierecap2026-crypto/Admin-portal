@@ -1,0 +1,6 @@
+{
+  "name": "Chercher Secondary School Admin Portal",
+  "description": "Professional modern Admin Portal for school result management system, featuring student, teacher, grade and subject management with dynamic result calculations and exports.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

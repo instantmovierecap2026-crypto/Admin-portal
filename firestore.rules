@@ -1,0 +1,135 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // 1. Global Safety Net
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // --- Primitives ---
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isAdmin() {
+      return isSignedIn() && (
+        exists(/databases/$(database)/documents/admins/$(request.auth.uid)) ||
+        request.auth.token.email == 'eaglemind2026@gmail.com'
+      );
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    // --- Validation Helpers ---
+
+    function isValidTeacher(data) {
+      return data.keys().hasAll(['name', 'teacherId', 'sex', 'age', 'createdAt']) &&
+             data.keys().size() == 5 &&
+             data.name is string && data.name.size() > 0 && data.name.size() <= 100 &&
+             data.teacherId is string && data.teacherId.size() > 0 &&
+             data.sex in ['Male', 'Female'] &&
+             data.age is number && data.age >= 18 && data.age <= 100 &&
+             data.createdAt == request.time;
+    }
+
+    function isValidGrade(data) {
+      return data.keys().hasAll(['name', 'createdAt']) &&
+             data.keys().size() == 2 &&
+             data.name is string && data.name.size() > 0 && data.name.size() <= 20 &&
+             data.createdAt == request.time;
+    }
+
+    function isValidStudent(data) {
+      return data.keys().hasAll(['name', 'studentId', 'sex', 'age', 'gradeId', 'createdAt']) &&
+             data.keys().size() == 6 &&
+             data.name is string && data.name.size() > 0 && data.name.size() <= 100 &&
+             data.studentId is string && data.studentId.matches('^ST[0-9]{4}$') &&
+             data.sex in ['Male', 'Female'] &&
+             data.age is number && data.age >= 5 && data.age <= 30 &&
+             data.gradeId is string &&
+             data.createdAt == request.time;
+    }
+
+    function isValidSubject(data) {
+      return data.keys().hasAll(['name', 'passkey', 'gradeId', 'createdAt']) &&
+             data.keys().size() == 4 &&
+             data.name is string && data.name.size() > 0 && data.name.size() <= 50 &&
+             data.passkey is string && data.passkey.size() > 0 && data.passkey.size() <= 50 &&
+             data.gradeId is string &&
+             data.createdAt == request.time;
+    }
+
+    function isValidResult(data) {
+      return data.keys().hasAll(['studentId', 'subjectId', 'gradeId', 'semester1', 'semester2', 'average', 'total', 'rank', 'status', 'updatedAt']) &&
+             data.keys().size() == 10 &&
+             data.studentId is string &&
+             data.subjectId is string &&
+             data.gradeId is string &&
+             (data.semester1 is number || data.semester1 == null) &&
+             (data.semester2 is number || data.semester2 == null) &&
+             data.status in ['Pass', 'Fail', 'Unfilled'] &&
+             data.updatedAt == request.time;
+    }
+
+    // --- Collection Routes ---
+
+    match /admins/{adminId} {
+      allow read: if isAdmin();
+      allow write: if false; // Only manageable via console or bootstrapping
+    }
+
+    match /teachers/{teacherId} {
+      allow read: if isAdmin();
+      allow create: if isAdmin() && isValidTeacher(incoming());
+      allow update: if isAdmin() && isValidTeacher(incoming()) && 
+                    incoming().createdAt == existing().createdAt;
+      allow delete: if isAdmin();
+    }
+
+    match /grades/{gradeId} {
+      allow read: if isAdmin();
+      allow create: if isAdmin() && isValidGrade(incoming());
+      allow update: if isAdmin() && isValidGrade(incoming()) &&
+                    incoming().createdAt == existing().createdAt;
+      allow delete: if isAdmin();
+    }
+
+    match /students/{studentId} {
+      allow read: if isAdmin();
+      allow create: if isAdmin() && isValidStudent(incoming()) && exists(/databases/$(database)/documents/grades/$(incoming().gradeId));
+      allow update: if isAdmin() && isValidStudent(incoming()) &&
+                    incoming().createdAt == existing().createdAt &&
+                    incoming().gradeId == existing().gradeId;
+      allow delete: if isAdmin();
+    }
+
+    match /subjects/{subjectId} {
+      allow read: if isAdmin();
+      allow create: if isAdmin() && isValidSubject(incoming()) && exists(/databases/$(database)/documents/grades/$(incoming().gradeId));
+      allow update: if isAdmin() && isValidSubject(incoming()) &&
+                    incoming().createdAt == existing().createdAt &&
+                    incoming().gradeId == existing().gradeId;
+      allow delete: if isAdmin();
+    }
+
+    match /results/{resultId} {
+      allow read: if isAdmin();
+      allow create: if isAdmin() && isValidResult(incoming());
+      allow update: if isAdmin() && isValidResult(incoming()) &&
+                    incoming().studentId == existing().studentId &&
+                    incoming().subjectId == existing().subjectId;
+      allow delete: if isAdmin();
+    }
+  }
+}
