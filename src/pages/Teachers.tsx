@@ -24,6 +24,7 @@ const Teachers = () => {
   
   // Form state
   const [name, setName] = useState('');
+  const [teacherIdInput, setTeacherIdInput] = useState('');
   const [sex, setSex] = useState<'Male' | 'Female'>('Male');
   const [age, setAge] = useState<number>(25);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -38,23 +39,20 @@ const Teachers = () => {
     return () => unsubscribe();
   }, []);
 
-  const generateTeacherId = () => {
-    return 'CH-T-' + Math.floor(1000 + Math.random() * 9000);
-  };
-
   const handleAddTeacher = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
     try {
       await addDoc(collection(db, 'teachers'), {
         name,
-        teacherId: generateTeacherId(),
+        teacherId: teacherIdInput,
         sex,
         age,
         createdAt: serverTimestamp()
       });
       setShowAddModal(false);
       setName('');
+      setTeacherIdInput('');
       setSex('Male');
       setAge(25);
     } catch (error) {
@@ -65,7 +63,7 @@ const Teachers = () => {
   };
 
   const handleDeleteTeacher = async (id: string) => {
-    if (window.confirm('Are you sure you want to remove this teacher?')) {
+    if (window.confirm('Delete this teacher?')) {
       try {
         await deleteDoc(doc(db, 'teachers', id));
       } catch (error) {
@@ -83,15 +81,15 @@ const Teachers = () => {
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-black text-slate-900 dark:text-white uppercase tracking-tighter">Authorized Faculty</h1>
-          <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest leading-none mt-1">Institutional Record Batch: {teachers.length} Active Profiles</p>
+          <h1 className="text-2xl font-black text-slate-900 dark:text-white uppercase tracking-tighter">Teachers</h1>
+          <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest leading-none mt-1">Total Teachers: {teachers.length}</p>
         </div>
         <button
           onClick={() => setShowAddModal(true)}
           className="flex items-center justify-center gap-2 px-6 py-2.5 bg-indigo-600 text-white text-[10px] font-bold uppercase tracking-widest rounded-lg hover:bg-indigo-700 transition-all shadow-sm"
         >
           <Plus size={14} />
-          Initialize Registration
+          Add Teacher
         </button>
       </div>
 
@@ -100,7 +98,7 @@ const Teachers = () => {
           <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300" size={14} />
           <input
             type="text"
-            placeholder="Search Record Identifier..."
+            placeholder="Search by name or ID..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="w-full pl-10 pr-4 py-2 bg-slate-50 dark:bg-slate-900 border-none rounded-lg outline-none text-xs font-bold dark:text-white transition-all uppercase tracking-wide placeholder:text-slate-300"
@@ -108,7 +106,7 @@ const Teachers = () => {
         </div>
         <button className="hidden sm:flex items-center gap-2 px-4 py-2 border border-slate-100 dark:border-slate-700 rounded-lg text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors text-[9px] font-black uppercase tracking-widest">
           <Filter size={12} />
-          <span>Filter Sequence</span>
+          <span>Filter</span>
         </button>
       </div>
 
@@ -143,7 +141,7 @@ const Teachers = () => {
                 </div>
 
                 <div className="mt-6 pt-4 border-t border-slate-50 dark:border-slate-700/50 flex justify-between items-center opacity-0 group-hover:opacity-100 transition-all translate-y-1 group-hover:translate-y-0">
-                   <span className="text-[8px] font-bold text-slate-300 uppercase tracking-widest">Entry: {new Date(teacher.createdAt?.seconds * 1000).toLocaleDateString()}</span>
+                   <span className="text-[8px] font-bold text-slate-300 uppercase tracking-widest">Added: {new Date(teacher.createdAt?.seconds * 1000).toLocaleDateString()}</span>
                    <button
                     onClick={(e) => { e.stopPropagation(); handleDeleteTeacher(teacher.id); }}
                     className="p-1.5 text-slate-300 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-md transition-all"
@@ -168,8 +166,8 @@ const Teachers = () => {
           >
             <div className="flex items-center justify-between mb-8">
               <div>
-                <h2 className="text-lg font-black text-slate-900 dark:text-white uppercase tracking-tighter">DATA ENTRY</h2>
-                <p className="text-[9px] text-slate-400 font-bold uppercase tracking-widest">Faculty Record Initialization</p>
+                <h2 className="text-lg font-black text-slate-900 dark:text-white uppercase tracking-tighter">New Teacher</h2>
+                <p className="text-[9px] text-slate-400 font-bold uppercase tracking-widest">Add teacher details</p>
               </div>
               <button 
                 onClick={() => setShowAddModal(false)}
@@ -181,13 +179,25 @@ const Teachers = () => {
 
             <form onSubmit={handleAddTeacher} className="space-y-4">
               <div className="space-y-1.5">
-                <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest pl-1">Full Legal Name</label>
+                <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest pl-1">Full Name</label>
                 <input
                   type="text"
                   required
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  placeholder="IDENTIFIER_NAME_STRING"
+                  placeholder="Enter full name"
+                  className="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-700 rounded-lg outline-none focus:ring-1 focus:ring-indigo-600 dark:text-white transition-all text-xs font-bold"
+                />
+              </div>
+
+              <div className="space-y-1.5">
+                <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest pl-1">Teacher ID</label>
+                <input
+                  type="text"
+                  required
+                  value={teacherIdInput}
+                  onChange={(e) => setTeacherIdInput(e.target.value)}
+                  placeholder="Enter unique ID"
                   className="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-700 rounded-lg outline-none focus:ring-1 focus:ring-indigo-600 dark:text-white transition-all text-xs font-bold"
                 />
               </div>
@@ -200,12 +210,12 @@ const Teachers = () => {
                     onChange={(e) => setSex(e.target.value as 'Male' | 'Female')}
                     className="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-700 rounded-lg outline-none text-xs font-bold dark:text-white appearance-none cursor-pointer"
                   >
-                    <option value="Male">MALE_CORE</option>
-                    <option value="Female">FEMALE_CORE</option>
+                    <option value="Male">Male</option>
+                    <option value="Female">Female</option>
                   </select>
                 </div>
                 <div className="space-y-1.5">
-                  <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest pl-1">Age Unit</label>
+                  <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest pl-1">Age</label>
                   <input
                     type="number"
                     required
@@ -224,14 +234,14 @@ const Teachers = () => {
                   className="w-full py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-[10px] font-black uppercase tracking-widest shadow-md shadow-indigo-100 dark:shadow-none transition-all flex items-center justify-center gap-2 disabled:opacity-70"
                 >
                   {isSubmitting ? <Loader2 className="animate-spin" size={14} /> : <Plus size={14} />}
-                  Commit Registry
+                  Save Teacher
                 </button>
                 <button
                   type="button"
                   onClick={() => setShowAddModal(false)}
                   className="w-full py-2.5 text-slate-300 hover:text-slate-500 rounded-lg text-[9px] font-black uppercase tracking-widest transition-all"
                 >
-                  Abstain
+                  Cancel
                 </button>
               </div>
             </form>

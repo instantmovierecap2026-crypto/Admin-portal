@@ -27,6 +27,7 @@ export interface Subject {
   id: string;
   name: string;
   passkey: string;
+  teacherId: string;
   gradeId: string;
   createdAt: any;
 }

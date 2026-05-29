@@ -51,7 +51,7 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed, setCollapsed }) => {
               CHERCHER HIGH
             </span>
             <span className="text-sm font-black leading-none mt-1 text-slate-800 dark:text-white uppercase tracking-tighter">
-              Admin Gateway
+              Admin Portal
             </span>
           </motion.div>
         )}
@@ -103,7 +103,7 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed, setCollapsed }) => {
             className="w-full flex items-center gap-3 px-4 py-2.5 text-slate-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-all text-[9px] font-black uppercase tracking-widest"
           >
             <LogOut size={14} />
-            <span>Terminate Session</span>
+            <span>Logout</span>
           </button>
         </div>
       )}

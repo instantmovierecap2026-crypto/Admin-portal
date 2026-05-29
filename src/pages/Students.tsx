@@ -10,10 +10,11 @@ import {
   query, 
   where,
   writeBatch,
-  getDocs
+  getDocs,
+  orderBy
 } from 'firebase/firestore';
 import { db, handleFirestoreError, OperationType } from '../lib/firebase';
-import { Student, Grade, Subject } from '../types';
+import { Student, Grade, Subject, Teacher } from '../types';
 import { 
   BookOpen, 
   Search, 
@@ -38,6 +39,7 @@ const Students = () => {
   const [students, setStudents] = useState<Student[]>([]);
   const [grades, setGrades] = useState<Grade[]>([]);
   const [subjects, setSubjects] = useState<Subject[]>([]);
+  const [teachers, setTeachers] = useState<Teacher[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   
@@ -46,14 +48,19 @@ const Students = () => {
   const [setupStep, setSetupStep] = useState(1);
   const [numStudents, setNumStudents] = useState(1);
   const [numSubjects, setNumSubjects] = useState(1);
-  const [subjectInputs, setSubjectInputs] = useState<{name: string, passkey: string}[]>([]);
+  const [subjectInputs, setSubjectInputs] = useState<{name: string, passkey: string, teacherId: string}[]>([]);
   const [studentInputs, setStudentInputs] = useState<{name: string, sex: 'Male' | 'Female', age: number}[]>([]);
   const [isSettingUp, setIsSettingUp] = useState(false);
 
   useEffect(() => {
-    // Fetch all grades for labels
+    // Fetch all grades
     const unsubGrades = onSnapshot(collection(db, 'grades'), (s) => {
       setGrades(s.docs.map(d => ({ id: d.id, ...d.data() } as Grade)));
+    });
+
+    // Fetch all teachers
+    const unsubTeachers = onSnapshot(collection(db, 'teachers'), (s) => {
+      setTeachers(s.docs.map(d => ({ id: d.id, ...d.data() } as Teacher)));
     });
 
     // Fetch students
@@ -74,6 +81,7 @@ const Students = () => {
       });
       return () => {
         unsubGrades();
+        unsubTeachers();
         unsubStudents();
         unsubSubjects();
       };
@@ -81,6 +89,7 @@ const Students = () => {
 
     return () => {
       unsubGrades();
+      unsubTeachers();
       unsubStudents();
     };
   }, [gradeId]);
@@ -98,7 +107,7 @@ const Students = () => {
 
   const nextStep = () => {
     if (setupStep === 1) {
-      setSubjectInputs(Array(numSubjects).fill(0).map(() => ({ name: '', passkey: generateId('PK') })));
+      setSubjectInputs(Array(numSubjects).fill(0).map(() => ({ name: '', passkey: generateId('PK'), teacherId: '' })));
       setStudentInputs(Array(numStudents).fill(0).map(() => ({ name: '', sex: 'Male', age: 15 })));
       setSetupStep(2);
     } else if (setupStep === 2) {
@@ -188,12 +197,12 @@ const Students = () => {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-slate-800 dark:text-white uppercase tracking-tighter">
-            {currentGrade ? `Members · ${currentGrade.name}` : 'Student Directory'}
+            {currentGrade ? `Students · ${currentGrade.name}` : 'Student List'}
           </h1>
           <p className="text-sm text-slate-500 dark:text-slate-400 font-medium">
             {currentGrade 
-              ? `Authorized roster for academic section ${currentGrade.name}.`
-              : 'Institutional overview of all registered scholars.'}
+              ? `Registered students for ${currentGrade.name}.`
+              : 'Institutional list of all students.'}
           </p>
         </div>
         {gradeId && (
@@ -202,7 +211,7 @@ const Students = () => {
             className="flex items-center justify-center gap-2 px-6 py-2.5 bg-indigo-600 text-white text-xs font-bold rounded-lg hover:bg-indigo-700 transition-all shadow-sm"
           >
             <Settings2 size={16} />
-            Institutional Setup
+            Setup Class
           </button>
         )}
       </div>
@@ -212,7 +221,7 @@ const Students = () => {
           <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
           <input
             type="text"
-            placeholder="Search by index, name or unique ID..."
+            placeholder="Search by name or ID..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="w-full pl-11 pr-4 py-2.5 bg-slate-50 dark:bg-slate-900 border-none rounded-xl outline-none text-sm dark:text-white transition-all font-medium"
@@ -220,7 +229,7 @@ const Students = () => {
         </div>
         <button className="hidden sm:flex items-center gap-2 px-4 py-2.5 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors text-[10px] font-bold uppercase tracking-widest">
           <ListFilter size={14} />
-          <span>Sort Order</span>
+          <span>Sort</span>
         </button>
       </div>
 
@@ -234,11 +243,11 @@ const Students = () => {
             <table className="w-full text-left">
               <thead>
                 <tr className="bg-slate-50 dark:bg-slate-900/50 border-b border-slate-100 dark:border-slate-700">
-                  <th className="px-6 py-4 text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest">Scholar Profile</th>
-                  <th className="px-6 py-4 text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest">Index ID</th>
-                  <th className="px-6 py-4 text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest">Biological Data</th>
-                  <th className="px-6 py-4 text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest">Assigned Class</th>
-                  <th className="px-6 py-4 text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest text-right">Settings</th>
+                  <th className="px-6 py-4 text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest">Student</th>
+                  <th className="px-6 py-4 text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest">ID</th>
+                  <th className="px-6 py-4 text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest">Gender / Age</th>
+                  <th className="px-6 py-4 text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest">Grade</th>
+                  <th className="px-6 py-4 text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest text-right">Action</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-50 dark:divide-slate-700">
@@ -281,7 +290,7 @@ const Students = () => {
           </div>
           {filteredStudents.length === 0 && (
             <div className="text-center py-20">
-               <p className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest">No matching records found in database.</p>
+               <p className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest">No students found.</p>
             </div>
           )}
         </div>
@@ -298,8 +307,8 @@ const Students = () => {
              {/* Header */}
              <div className="p-8 border-b border-slate-100 dark:border-slate-700 flex items-center justify-between">
                 <div>
-                   <h2 className="text-lg font-bold text-slate-900 dark:text-white uppercase tracking-tighter">Batch Class Configuration</h2>
-                   <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-1">Step {setupStep} · {currentGrade?.name} Environment Initialization</p>
+                   <h2 className="text-lg font-bold text-slate-900 dark:text-white uppercase tracking-tighter">Setup Class</h2>
+                   <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-1">Step {setupStep} · {currentGrade?.name} setup</p>
                 </div>
                 <button onClick={() => setShowSetupModal(false)} className="p-2 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg text-slate-400">
                    <X size={18} />
@@ -314,13 +323,13 @@ const Students = () => {
                          <div className="w-12 h-12 bg-indigo-600 text-white rounded-xl flex items-center justify-center mx-auto mb-4 shadow-md shadow-indigo-200 dark:shadow-none">
                             <Settings2 size={24} />
                          </div>
-                         <h3 className="text-sm font-bold text-indigo-900 dark:text-indigo-300 uppercase tracking-tight">Grade Parameters</h3>
-                         <p className="text-xs text-indigo-700 dark:text-indigo-400 font-medium max-w-xs mx-auto mt-1">Define the core scale of this academic section before populating data.</p>
+                         <h3 className="text-sm font-bold text-indigo-900 dark:text-indigo-300 uppercase tracking-tight">Class Info</h3>
+                         <p className="text-xs text-indigo-700 dark:text-indigo-400 font-medium max-w-xs mx-auto mt-1">Fill in the number of students and subjects.</p>
                       </div>
 
                       <div className="grid grid-cols-2 gap-6">
                          <div className="space-y-1.5">
-                            <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest pl-1">Total Scholars</label>
+                            <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest pl-1">Number of Students</label>
                             <input
                                type="number"
                                min={1}
@@ -331,7 +340,7 @@ const Students = () => {
                             />
                          </div>
                          <div className="space-y-1.5">
-                            <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest pl-1">Subjects Tracked</label>
+                            <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest pl-1">Number of Subjects</label>
                             <input
                                type="number"
                                min={1}
@@ -351,21 +360,52 @@ const Students = () => {
                          {subjectInputs.map((sub, idx) => (
                             <div key={idx} className="p-4 bg-slate-50 dark:bg-slate-900/50 rounded-xl border border-slate-100 dark:border-slate-700 space-y-3">
                                <div className="flex justify-between items-center">
-                                  <span className="text-[9px] font-bold text-indigo-600 dark:text-indigo-400 uppercase tracking-widest">Entry #{idx + 1}</span>
-                                  <span className="text-[8px] font-mono text-slate-400 tracking-tighter">REF: {sub.passkey}</span>
+                                  <span className="text-[9px] font-bold text-indigo-600 dark:text-indigo-400 uppercase tracking-widest">Subject #{idx + 1}</span>
                                </div>
-                               <input
-                                  type="text"
-                                  placeholder="Module Name"
-                                  required
-                                  value={sub.name}
-                                  onChange={(e) => {
-                                     const newInp = [...subjectInputs];
-                                     newInp[idx].name = e.target.value;
-                                     setSubjectInputs(newInp);
-                                  }}
-                                  className="w-full px-4 py-2.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg outline-none focus:border-indigo-500 text-xs dark:text-white font-bold"
-                               />
+                               <div className="space-y-2">
+                                  <input
+                                     type="text"
+                                     placeholder="Subject Name"
+                                     required
+                                     value={sub.name}
+                                     onChange={(e) => {
+                                        const newInp = [...subjectInputs];
+                                        newInp[idx].name = e.target.value;
+                                        setSubjectInputs(newInp);
+                                     }}
+                                     className="w-full px-4 py-2.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg outline-none focus:border-indigo-500 text-xs dark:text-white font-bold"
+                                  />
+                                  <select
+                                     required
+                                     value={sub.teacherId}
+                                     onChange={(e) => {
+                                        const newInp = [...subjectInputs];
+                                        newInp[idx].teacherId = e.target.value;
+                                        setSubjectInputs(newInp);
+                                     }}
+                                     className="w-full px-4 py-2.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg outline-none focus:border-indigo-500 text-xs dark:text-white font-bold"
+                                  >
+                                     <option value="">Select Teacher</option>
+                                     {teachers.map(t => (
+                                        <option key={t.id} value={t.id}>{t.name} ({t.teacherId})</option>
+                                     ))}
+                                  </select>
+                                  <div className="space-y-1">
+                                     <label className="text-[8px] font-bold text-slate-400 uppercase">Passkey</label>
+                                     <input
+                                        type="text"
+                                        placeholder="Passkey"
+                                        required
+                                        value={sub.passkey}
+                                        onChange={(e) => {
+                                           const newInp = [...subjectInputs];
+                                           newInp[idx].passkey = e.target.value;
+                                           setSubjectInputs(newInp);
+                                        }}
+                                        className="w-full px-4 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg outline-none focus:border-indigo-500 text-[10px] dark:text-white font-bold"
+                                     />
+                                  </div>
+                               </div>
                             </div>
                          ))}
                       </div>
@@ -377,7 +417,7 @@ const Students = () => {
                       {studentInputs.map((stu, idx) => (
                          <div key={idx} className="p-5 bg-slate-50 dark:bg-slate-900/50 rounded-xl border border-slate-100 dark:border-slate-700 flex flex-wrap md:flex-nowrap gap-4 items-end">
                             <div className="flex-1 min-w-[200px] space-y-1.5">
-                               <label className="text-[9px] font-bold text-slate-400 uppercase tracking-widest pl-1">#{idx + 1} Full Identity</label>
+                               <label className="text-[9px] font-bold text-slate-400 uppercase tracking-widest pl-1">Student #{idx + 1} Name</label>
                                <input
                                   type="text"
                                   placeholder="Full Name"
@@ -392,7 +432,7 @@ const Students = () => {
                                />
                             </div>
                             <div className="w-32 space-y-1.5">
-                               <label className="text-[9px] font-bold text-slate-400 uppercase tracking-widest pl-1">Biology</label>
+                               <label className="text-[9px] font-bold text-slate-400 uppercase tracking-widest pl-1">Sex</label>
                                <select
                                   value={stu.sex}
                                   onChange={(e) => {
@@ -442,7 +482,7 @@ const Students = () => {
                       onClick={nextStep}
                       className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-[10px] font-bold uppercase tracking-widest shadow-md shadow-indigo-100 dark:shadow-none transition-all"
                    >
-                      Proceed Step
+                      Next Step
                       <ChevronRight size={14} />
                    </button>
                 ) : (
@@ -452,7 +492,7 @@ const Students = () => {
                       className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-indigo-900 dark:bg-indigo-950 text-white rounded-xl text-[10px] font-bold uppercase tracking-widest shadow-md transition-all disabled:opacity-70"
                    >
                       {isSettingUp ? <Loader2 className="animate-spin" size={14} /> : <CheckCircle2 size={14} />}
-                      {isSettingUp ? 'Finalizing...' : 'Initialize Academic Environment'}
+                      {isSettingUp ? 'Saving...' : 'Finish Setup'}
                    </button>
                 )}
              </div>

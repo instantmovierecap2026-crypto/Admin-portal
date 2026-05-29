@@ -66,15 +66,15 @@ const Grades = () => {
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-slate-800 dark:text-white">Academic Sections</h1>
-          <p className="text-sm text-slate-500 dark:text-slate-400 font-medium">Managing core academic structures for current session.</p>
+          <h1 className="text-2xl font-bold text-slate-800 dark:text-white">Classes</h1>
+          <p className="text-sm text-slate-500 dark:text-slate-400 font-medium">Manage school classes and sections.</p>
         </div>
         <button
           onClick={() => setShowAddModal(true)}
           className="flex items-center justify-center gap-2 px-6 py-2.5 bg-indigo-600 text-white text-xs font-bold rounded-lg hover:bg-indigo-700 transition-all shadow-sm"
         >
           <Plus size={16} />
-          Create New Section
+          Add Class
         </button>
       </div>
 
@@ -108,7 +108,7 @@ const Grades = () => {
                 </div>
                 
                 <h3 className="text-sm font-bold text-slate-900 dark:text-white uppercase">{grade.name}</h3>
-                <p className="text-[10px] text-slate-400 mt-1 font-bold uppercase tracking-widest">Active Section</p>
+                <p className="text-[10px] text-slate-400 mt-1 font-bold uppercase tracking-widest">Active Class</p>
                 
                 <div className="mt-8 flex items-center justify-between">
                    <div className="flex -space-x-1.5">
@@ -129,13 +129,13 @@ const Grades = () => {
       {!loading && grades.length === 0 && (
         <div className="text-center py-20 bg-white dark:bg-gray-800 rounded-2xl border border-dashed border-slate-200 dark:border-slate-700">
           <GraduationCap className="mx-auto text-slate-200 dark:text-slate-700 mb-4" size={48} />
-          <h2 className="text-lg font-bold text-slate-900 dark:text-white">No sections defined</h2>
-          <p className="text-xs text-slate-400 mt-1 max-w-xs mx-auto font-medium">Define your first school grade or section to begin student management.</p>
+          <h2 className="text-lg font-bold text-slate-900 dark:text-white">No classes found</h2>
+          <p className="text-xs text-slate-400 mt-1 max-w-xs mx-auto font-medium">Add your first class or section to start managing students.</p>
           <button
             onClick={() => setShowAddModal(true)}
             className="mt-6 px-6 py-2.5 bg-indigo-600 text-white text-xs font-bold rounded-lg shadow-sm"
           >
-            Create First Section
+            Add First Class
           </button>
         </div>
       )}
@@ -151,8 +151,8 @@ const Grades = () => {
           >
             <div className="flex items-center justify-between mb-8">
               <div>
-                <h2 className="text-lg font-bold text-slate-900 dark:text-white uppercase tracking-tighter">New Section</h2>
-                <p className="text-xs text-slate-400 font-medium">Add a section identifier (e.g. 9A).</p>
+                <h2 className="text-lg font-bold text-slate-900 dark:text-white uppercase tracking-tighter">New Class</h2>
+                <p className="text-xs text-slate-400 font-medium">Enter class name (e.g. 9A).</p>
               </div>
               <button onClick={() => setShowAddModal(false)} className="p-2 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg text-slate-400">
                 <X size={18} />
@@ -161,7 +161,7 @@ const Grades = () => {
 
             <form onSubmit={handleAddGrade} className="space-y-6">
               <div className="space-y-1.5">
-                <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest pl-1">Section Identifier</label>
+                <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest pl-1">Class Name</label>
                 <input
                   type="text"
                   required
@@ -187,7 +187,7 @@ const Grades = () => {
                   className="flex-[2] px-4 py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold uppercase shadow-md shadow-indigo-100 dark:shadow-none transition-all flex items-center justify-center gap-2"
                 >
                   {isSubmitting ? <Loader2 className="animate-spin" size={14} /> : <Plus size={14} />}
-                  Add Academic Section
+                  Save Class
                 </button>
               </div>
             </form>

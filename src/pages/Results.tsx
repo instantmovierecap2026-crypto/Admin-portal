@@ -256,8 +256,8 @@ const Results = () => {
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-slate-800 dark:text-white uppercase tracking-tighter">Academic Analytics</h1>
-          <p className="text-sm text-slate-500 dark:text-slate-400 font-medium font-display uppercase tracking-widest text-[10px]">Institutional Result Computation Engine</p>
+          <h1 className="text-2xl font-bold text-slate-800 dark:text-white uppercase tracking-tighter">Student Results</h1>
+          <p className="text-sm text-slate-500 dark:text-slate-400 font-medium font-display uppercase tracking-widest text-[10px]">Enter and view student grades</p>
         </div>
         <div className="flex items-center gap-3">
           <div className="relative group">
@@ -266,9 +266,9 @@ const Results = () => {
               onChange={(e) => setSelectedGradeId(e.target.value)}
               className="appearance-none pl-5 pr-10 py-2.5 bg-white dark:bg-gray-800 border-2 border-slate-200 dark:border-slate-700 rounded-xl shadow-sm outline-none focus:border-indigo-500 font-bold text-xs dark:text-white transition-all uppercase tracking-widest cursor-pointer"
             >
-              <option value="" disabled>Select Environment</option>
+              <option value="" disabled>Select Class</option>
               {grades.map(g => (
-                <option key={g.id} value={g.id}>Section {g.name}</option>
+                <option key={g.id} value={g.id}>Class {g.name}</option>
               ))}
             </select>
             <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" size={14} />
@@ -281,13 +281,13 @@ const Results = () => {
            <div className="w-16 h-16 bg-slate-50 dark:bg-slate-900 text-slate-300 rounded-2xl flex items-center justify-center mb-6 border border-slate-100 dark:border-slate-800">
               <FileText size={32} />
            </div>
-           <h2 className="text-lg font-bold text-slate-900 dark:text-white uppercase tracking-tighter">Operational Readiness</h2>
-           <p className="text-[10px] text-slate-400 mt-2 max-w-xs font-bold uppercase tracking-widest">Select an academic section to initialize analysis and entry sub-systems.</p>
+           <h2 className="text-lg font-bold text-slate-900 dark:text-white uppercase tracking-tighter">Ready to Work</h2>
+           <p className="text-[10px] text-slate-400 mt-2 max-w-xs font-bold uppercase tracking-widest">Select a class to start entering results.</p>
         </div>
       ) : loading ? (
         <div className="flex flex-col items-center justify-center py-32 space-y-4">
            <Loader2 className="animate-spin text-indigo-600" size={32} />
-           <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">Synchronizing record blocks...</p>
+           <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">Loading results...</p>
         </div>
       ) : (
         <div className="space-y-6">
@@ -300,12 +300,12 @@ const Results = () => {
                    className="flex items-center gap-2 px-6 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-[10px] font-bold uppercase tracking-widest shadow-sm transition-all disabled:opacity-50"
                 >
                    {isCalculating ? <Loader2 size={12} className="animate-spin" /> : <RefreshCcw size={12} />}
-                   {isCalculating ? 'Processing...' : 'Compute Core Stats'}
+                   {isCalculating ? 'Calculating...' : 'Calculate Ranks'}
                 </button>
                 {isPublishReady && (
                    <button className="flex items-center gap-2 px-6 py-2.5 bg-slate-900 dark:bg-white dark:text-slate-900 text-white rounded-lg text-[10px] font-bold uppercase tracking-widest transition-all">
                       <CheckCircle2 size={12} />
-                      Publish Block
+                      Publish Results
                    </button>
                 )}
              </div>
@@ -327,7 +327,7 @@ const Results = () => {
              <table className="w-full text-left min-w-[800px]">
                 <thead>
                    <tr className="bg-slate-50 dark:bg-slate-900/50 border-b border-slate-100 dark:border-slate-700">
-                      <th className="px-6 py-5 text-[10px] font-bold text-slate-400 uppercase tracking-widest sticky left-0 bg-white dark:bg-gray-800 z-10 w-[220px]">Scholar Profile</th>
+                      <th className="px-6 py-5 text-[10px] font-bold text-slate-400 uppercase tracking-widest sticky left-0 bg-white dark:bg-gray-800 z-10 w-[220px]">Student</th>
                       {subjects.map(sub => (
                          <th key={sub.id} className="px-4 py-5 text-[10px] font-bold text-slate-400 uppercase tracking-widest text-center border-l border-slate-100 dark:border-slate-700/50">
                             <div className="flex flex-col gap-0.5">
@@ -336,7 +336,7 @@ const Results = () => {
                             </div>
                          </th>
                       ))}
-                      <th className="px-6 py-5 text-[10px] font-bold text-slate-400 uppercase tracking-widest text-center border-l border-slate-100 dark:border-slate-700/50 bg-slate-50/50 dark:bg-slate-900/10">Average / Status</th>
+                      <th className="px-6 py-5 text-[10px] font-bold text-slate-400 uppercase tracking-widest text-center border-l border-slate-100 dark:border-slate-700/50 bg-slate-50/50 dark:bg-slate-900/10">Avg / Status</th>
                    </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-50 dark:divide-slate-700">
@@ -351,7 +351,7 @@ const Results = () => {
                                   <span className="text-xs font-bold text-slate-900 dark:text-white capitalize leading-none">{student.name}</span>
                                   <div className="flex items-center gap-2">
                                      <span className="text-[8px] font-bold text-slate-400 uppercase tracking-tighter">{student.studentId}</span>
-                                     <button onClick={() => generatePDF(student)} className="text-[8px] text-indigo-500 font-black uppercase tracking-widest hover:underline">Transcript</button>
+                                     <button onClick={() => generatePDF(student)} className="text-[8px] text-indigo-500 font-black uppercase tracking-widest hover:underline">Download PDF</button>
                                   </div>
                                </div>
                             </td>
@@ -386,7 +386,7 @@ const Results = () => {
                                   </span>
                                   <div className="flex gap-1">
                                      <span className={`text-[8px] font-black uppercase tracking-widest px-1.5 py-0.5 rounded ${summary?.status === 'Pass' ? 'bg-indigo-50 text-indigo-700' : summary?.status === 'Fail' ? 'bg-red-50 text-red-700' : 'text-slate-300'}`}>
-                                        {summary?.status || 'DATA_NULL'}
+                                        {summary?.status || 'NO DATA'}
                                      </span>
                                   </div>
                                </div>

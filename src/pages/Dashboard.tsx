@@ -51,8 +51,8 @@ const Dashboard = () => {
     <div className="space-y-6">
       {/* Header Info */}
       <div className="flex flex-col gap-1">
-        <h1 className="text-2xl font-black text-slate-900 dark:text-white uppercase tracking-tighter">Command Dashboard</h1>
-        <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest leading-none">Institutional Oversight & Real-time Analytics</p>
+        <h1 className="text-2xl font-black text-slate-900 dark:text-white uppercase tracking-tighter">School Dashboard</h1>
+        <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest leading-none">Overview of school records and results</p>
       </div>
 
       {/* Statistics Row */}
@@ -62,14 +62,14 @@ const Dashboard = () => {
            animate={{ opacity: 1, y: 0 }}
            className="bg-white dark:bg-gray-800 p-6 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm group hover:border-indigo-600 transition-colors"
         >
-          <p className="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1.5 ">Core Faculty</p>
+          <p className="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1.5 ">Teachers</p>
           <div className="flex items-end justify-between leading-none">
             <p className="text-3xl font-black text-slate-950 dark:text-white">{stats.teachers}</p>
             <div className="h-2 w-8 bg-indigo-50 dark:bg-indigo-900/40 rounded-full overflow-hidden">
                <div className="h-full bg-indigo-600 w-[60%]"></div>
             </div>
           </div>
-          <p className="mt-3 text-[8px] font-bold text-slate-300 dark:text-slate-500 uppercase tracking-widest">Active Academic Staff</p>
+          <p className="mt-3 text-[8px] font-bold text-slate-300 dark:text-slate-500 uppercase tracking-widest">Active teaching staff</p>
         </motion.div>
 
         <motion.div
@@ -78,12 +78,12 @@ const Dashboard = () => {
            transition={{ delay: 0.1 }}
            className="bg-white dark:bg-gray-800 p-6 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm group hover:border-indigo-600 transition-colors"
         >
-          <p className="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1.5">Enrolled Population</p>
+          <p className="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1.5">Students</p>
           <div className="flex items-end justify-between leading-none">
             <p className="text-3xl font-black text-slate-950 dark:text-white">{stats.students?.toLocaleString()}</p>
-            <p className="text-[10px] font-black text-indigo-600 dark:text-indigo-400 uppercase tracking-tighter">[{stats.grades} SECTS]</p>
+            <p className="text-[10px] font-black text-indigo-600 dark:text-indigo-400 uppercase tracking-tighter">[{stats.grades} Classes]</p>
           </div>
-          <p className="mt-3 text-[8px] font-bold text-slate-300 dark:text-slate-500 uppercase tracking-widest">Global Student Registry</p>
+          <p className="mt-3 text-[8px] font-bold text-slate-300 dark:text-slate-500 uppercase tracking-widest">Total student count</p>
         </motion.div>
 
         <motion.div
@@ -92,7 +92,7 @@ const Dashboard = () => {
            transition={{ delay: 0.2 }}
            className="bg-white dark:bg-gray-800 p-6 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm group hover:border-indigo-600 transition-colors"
         >
-          <p className="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1.5">Knowledge Units</p>
+          <p className="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1.5">Subjects</p>
           <div className="flex items-end justify-between leading-none">
             <p className="text-3xl font-black text-slate-950 dark:text-white">{stats.subjects}</p>
             <div className="flex -space-x-1">
@@ -100,7 +100,7 @@ const Dashboard = () => {
                <div className="w-4 h-4 rounded-full bg-indigo-100 dark:bg-indigo-900 border-2 border-white dark:border-gray-800"></div>
             </div>
           </div>
-          <p className="mt-3 text-[8px] font-bold text-slate-300 dark:text-slate-500 uppercase tracking-widest">Active Curriculum Blocks</p>
+          <p className="mt-3 text-[8px] font-bold text-slate-300 dark:text-slate-500 uppercase tracking-widest">Total modules</p>
         </motion.div>
 
         <motion.div
@@ -109,7 +109,7 @@ const Dashboard = () => {
            transition={{ delay: 0.3 }}
            className="bg-white dark:bg-gray-800 p-6 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm group hover:border-indigo-600 transition-colors"
         >
-          <p className="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1.5">Evaluation Status</p>
+          <p className="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1.5">Grades Filled</p>
           <div className="flex items-end justify-between leading-none">
             <p className="text-3xl font-black text-indigo-600">0%</p>
             <TrendingUp size={16} className="text-slate-200 dark:text-slate-700" />
@@ -123,8 +123,8 @@ const Dashboard = () => {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2 space-y-4">
           <div className="flex items-center justify-between px-1">
-            <h3 className="text-[10px] font-black text-slate-900 dark:text-white uppercase tracking-widest">System Event Logs</h3>
-            <Link to="/results" className="text-[8px] font-black text-indigo-600 hover:underline uppercase tracking-widest">Full History</Link>
+            <h3 className="text-[10px] font-black text-slate-900 dark:text-white uppercase tracking-widest">Recent Updates</h3>
+            <Link to="/results" className="text-[8px] font-black text-indigo-600 hover:underline uppercase tracking-widest">View All</Link>
           </div>
           
           <div className="bg-white dark:bg-gray-800 rounded-xl border border-slate-200 dark:border-slate-700 overflow-hidden shadow-sm">
@@ -136,8 +136,8 @@ const Dashboard = () => {
                         {String(i).padStart(2, '0')}
                       </div>
                       <div>
-                        <p className="text-xs font-bold text-slate-900 dark:text-white leading-tight">ACADEMIC_BLOCK_SYNC_COMPLETE: Grade 1{['2A', '2B', '0C', '1B'][i-1]}</p>
-                        <p className="text-[8px] text-slate-400 font-bold uppercase tracking-widest mt-1">Status: OK • Time: -{i * 2}HR_REL</p>
+                        <p className="text-xs font-bold text-slate-900 dark:text-white leading-tight">Class update complete: Grade 1{['2A', '2B', '0C', '1B'][i-1]}</p>
+                        <p className="text-[8px] text-slate-400 font-bold uppercase tracking-widest mt-1">Status: Success • Time: {i * 2} hours ago</p>
                       </div>
                    </div>
                    <ArrowRight size={12} className="text-slate-200 dark:text-slate-700 group-hover:text-indigo-600 transition-colors" />
@@ -152,30 +152,30 @@ const Dashboard = () => {
             <div className="absolute top-0 right-0 p-4 opacity-10">
                <Award size={80} />
             </div>
-            <p className="text-indigo-400 text-[8px] font-black uppercase tracking-[0.2em] mb-3">Institutional Status</p>
-            <h4 className="text-lg font-black leading-tight uppercase tracking-tighter mb-4">Readiness for Global Publication</h4>
+            <p className="text-indigo-400 text-[8px] font-black uppercase tracking-[0.2em] mb-3">Overall Status</p>
+            <h4 className="text-lg font-black leading-tight uppercase tracking-tighter mb-4">Results Publication Progress</h4>
             <div className="space-y-3 mb-8">
                <div className="flex items-center gap-2">
                   <div className="w-1.5 h-1.5 rounded-full bg-slate-700"></div>
-                  <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Semester 01: IN_PROGRESS</p>
+                  <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Semester 01: In Progress</p>
                </div>
                <div className="flex items-center gap-2">
                   <div className="w-1.5 h-1.5 rounded-full bg-slate-700"></div>
-                  <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Compliance Check: PENDING</p>
+                  <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Final Data Check: Pending</p>
                </div>
             </div>
             <Link to="/results" className="block w-full py-3 bg-white text-slate-950 rounded-lg text-center text-[10px] font-black hover:bg-slate-100 transition-all uppercase tracking-widest">
-              Audit Data Block
+              Review Results
             </Link>
           </div>
 
           <div className="bg-white dark:bg-gray-800 rounded-xl border border-slate-200 dark:border-slate-700 p-6 shadow-sm">
-            <h4 className="text-[10px] font-black text-slate-900 dark:text-white uppercase tracking-widest mb-6">Sub-System Routing</h4>
+            <h4 className="text-[10px] font-black text-slate-900 dark:text-white uppercase tracking-widest mb-6">Quick Links</h4>
             <div className="space-y-2">
               {[
-                { label: 'Register Faculty', path: '/teachers' },
-                { label: 'Generate Document Batch', path: '/results' },
-                { label: 'Database Console', path: '/developer' }
+                { label: 'Register Teacher', path: '/teachers' },
+                { label: 'View All Results', path: '/results' },
+                { label: 'System Settings', path: '/developer' }
               ].map((link) => (
                 <Link
                   key={link.label}
